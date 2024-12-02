@@ -3,7 +3,8 @@ const state = {
     squares: document.querySelectorAll(".square"),
     enemy: document.querySelectorAll(".enemy"),
     timeLeft: document.querySelector("#time-left"),
-    score: document.querySelector("#score")
+    score: document.querySelector("#score"),
+    lifes: document.querySelector("#lifes")
   },
 
   values: {
@@ -11,6 +12,7 @@ const state = {
     hitPosition: 0,
     result: 0,
     currentTime: 60,
+    lifeNumber: 3,
   },
   actions: {
     timerId: null,
@@ -18,11 +20,18 @@ const state = {
   }
 }
 
+function decreaseLife() {
+  if (state.values.lifeNumber <= 0) {
+    alert("Você perdeu todas as suas vidas! Fim de jogo!");
+  }
+}
+
 function countDown() {
   state.values.currentTime--;
   state.view.timeLeft.textContent = state.values.currentTime;
-
+  state.view.lifes.textContent = state.values.lifeNumber;
   if (state.values.currentTime <= 0) {
+    state.view.lifes.textContent--;
     clearInterval(state.actions.contDownTimerId);
     clearInterval(state.actions.timerId);
     alert("Game Over! O seu resultado foi " + state.values.result);
@@ -63,9 +72,20 @@ function addListenerHitbox() {
   });
 }
 
+function increaseDifficulty() {
+  if(state.values.gameVelocity > 200) {
+    state.values.gameVelocity -= 200;
+    clearInterval(state.actions.timerId);
+    moveEnemy();
+  }
+}
+
+setInterval(increaseDifficulty, 5000);
+
 function initialize(){
   moveEnemy();
   addListenerHitbox();
+  decreaseLife();
 };
 
 initialize();
