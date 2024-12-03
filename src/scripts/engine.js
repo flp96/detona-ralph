@@ -4,20 +4,41 @@ const state = {
     enemy: document.querySelectorAll(".enemy"),
     timeLeft: document.querySelector("#time-left"),
     score: document.querySelector("#score"),
-    lifes: document.querySelector("#lifes")
+    lifes: document.querySelector("#lifes"),
+    reset: document.querySelector("#reiniciar")
   },
 
   values: {
     gameVelocity: 1000,
     hitPosition: 0,
     result: 0,
-    currentTime: 60,
+    currentTime: 5,
     lifeNumber: 3,
   },
   actions: {
     timerId: null,
-    contDownTimerId: setInterval(countDown, 1000),
+    contDownTimerId: null,
   }
+}
+
+function reset() {
+  state.view.reset.addEventListener("mousedown", () => {
+  clearInterval(state.actions.timerId);
+  clearInterval(state.actions.contDownTimerId);
+
+  state.values.currentTime = 60; 
+  state.values.lifeNumber = 3;   
+  state.values.result = 0;      
+  state.values.gameVelocity = 1000;
+
+  state.view.score.textContent = state.values.result;
+  state.view.timeLeft.textContent = state.values.currentTime;
+  state.view.lifes.textContent = state.values.lifeNumber;
+
+  state.values.currentTime--;
+  state.view.timeLeft.textContent = state.values.currentTime;
+  initialize();
+  });
 }
 
 function decreaseLife() {
@@ -31,7 +52,8 @@ function countDown() {
   state.view.timeLeft.textContent = state.values.currentTime;
   state.view.lifes.textContent = state.values.lifeNumber;
   if (state.values.currentTime <= 0) {
-    state.view.lifes.textContent--;
+    state.values.lifeNumber--;
+    state.view.lifes.textContent = state.values.lifeNumber;
     clearInterval(state.actions.contDownTimerId);
     clearInterval(state.actions.timerId);
     alert("Game Over! O seu resultado foi " + state.values.result);
@@ -86,6 +108,8 @@ function initialize(){
   moveEnemy();
   addListenerHitbox();
   decreaseLife();
+  state.actions.contDownTimerId = setInterval(countDown, 1000);
 };
 
+reset();
 initialize();
