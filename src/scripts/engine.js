@@ -18,6 +18,7 @@ const state = {
   actions: {
     timerId: null,
     contDownTimerId: null,
+    difficultyTimerId: null,
   }
 }
 
@@ -25,6 +26,7 @@ function reset() {
   state.view.reset.addEventListener("mousedown", () => {
   clearInterval(state.actions.timerId);
   clearInterval(state.actions.contDownTimerId);
+  clearInterval(state.actions.difficultyTimerId);
 
   state.values.currentTime = 60; 
   state.values.lifeNumber = 3;   
@@ -37,14 +39,10 @@ function reset() {
 
   state.values.currentTime--;
   state.view.timeLeft.textContent = state.values.currentTime;
+
+
   initialize();
   });
-}
-
-function decreaseLife() {
-  if (state.values.lifeNumber <= 0) {
-    alert("Você perdeu todas as suas vidas! Fim de jogo!");
-  }
 }
 
 function countDown() {
@@ -57,6 +55,9 @@ function countDown() {
     clearInterval(state.actions.contDownTimerId);
     clearInterval(state.actions.timerId);
     alert("Game Over! O seu resultado foi " + state.values.result);
+    state.values.currentTime = 60;
+    state.view.timeLeft.textContent = state.values.currentTime;
+    initialize();
   }
 }
 
@@ -95,21 +96,24 @@ function addListenerHitbox() {
 }
 
 function increaseDifficulty() {
-  if(state.values.gameVelocity > 200) {
-    state.values.gameVelocity -= 200;
-    clearInterval(state.actions.timerId);
-    moveEnemy();
-  }
+  state.actions.difficultyTimerId = setInterval(() => {
+    if (state.values.gameVelocity > 200) {
+      state.values.gameVelocity -= 1;
+      clearInterval(state.actions.timerId);
+      moveEnemy();
+    }
+  }, 5000);
 }
 
-setInterval(increaseDifficulty, 5000);
-
 function initialize(){
+  clearInterval(state.actions.timerId);
+  clearInterval(state.actions.contDownTimerId);
   moveEnemy();
   addListenerHitbox();
-  decreaseLife();
+  countDown();
   state.actions.contDownTimerId = setInterval(countDown, 1000);
 };
 
+increaseDifficulty();
 reset();
 initialize();
